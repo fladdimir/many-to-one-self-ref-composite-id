@@ -14,3 +14,5 @@ count-associated - <https://stackoverflow.com/questions/67485800/usage-of-jpa-in
 partially-generated-composite-pk - <https://stackoverflow.com/questions/67457362/save-does-not-work-with-onetomany-having-a-composite-id-embedded-in-child-ele/67476074#67476074>
 
 single-table-inheritence - <https://stackoverflow.com/questions/67553633/hibernate-update-call-generates-new-row-in-onetoone-mapping/67557188#67557188>
+
+mapped-superclass - <https://stackoverflow.com/questions/67557542/mapping-has-a-relation-ship-in-a-class-marked-mappedsuperclass-in-hibernate/67559264#67559264>
