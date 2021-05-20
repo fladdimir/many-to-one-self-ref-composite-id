@@ -55,6 +55,7 @@ class DemoApplicationTests {
 		repository.save(e2);
 		e3.setParent(e2); // delegating to 'addChild' of the parent
 		repository.save(e3);
+		repository.flush();
 	}
 
 	@Test
