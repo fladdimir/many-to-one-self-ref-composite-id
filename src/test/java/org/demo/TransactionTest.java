@@ -7,7 +7,6 @@ import java.util.stream.Stream;
 
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
-import javax.transaction.Transactional.TxType;
 
 import org.hibernate.Session;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,23 +39,24 @@ class TransactionTest {
 	}
 
 	@BeforeEach
-	@Transactional(value = TxType.REQUIRES_NEW)
 	public void clean() {
 		Stream.of(3, 2, 1, 0).map(this::findOptionalById).forEach(o -> o.ifPresent(repository::delete));
 		repository.flush();
+		assertThat(repository.findAll()).isEmpty();
 	}
 
 	@Test
-	@Transactional(value = TxType.REQUIRES_NEW)
-	@Rollback(false)
+	@Transactional // creates new transaction when starting the test
+	@Rollback(false) // commit at end of test (not needed, just for manual DB inspection afterwards)
 	public void testSessionWithTransactional() {
 		Session session = entityManager.unwrap(Session.class);
 		assertThat(session.isDirty()).isFalse();
 
 		var newEntity = createEntity(1);
 		assertThat(session.isDirty()).isFalse();
+
 		repository.save(newEntity); // transaction already active
-		assertThat(session.isDirty()).isTrue(); // change not yet flushed
+		assertThat(session.isDirty()).isTrue(); // -> change not yet flushed!
 		repository.flush();
 		assertThat(session.isDirty()).isFalse();
 	}
@@ -68,6 +68,7 @@ class TransactionTest {
 
 		var newEntity = createEntity(1);
 		assertThat(session.isDirty()).isFalse();
+
 		repository.save(newEntity); // creates and commits a transaction
 		assertThat(session.isDirty()).isFalse(); // insertion already flushed
 	}
