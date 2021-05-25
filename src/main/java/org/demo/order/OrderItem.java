@@ -17,7 +17,6 @@ import lombok.Data;
 @IdClass(OrderItemId.class)
 public class OrderItem {
 
-    @Id
     @ManyToOne(fetch = FetchType.EAGER)
     private Order order;
 
