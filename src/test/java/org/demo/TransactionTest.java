@@ -41,6 +41,7 @@ class TransactionTest {
 
 		repository.save(newEntity); // transaction already active and propagated
 		assertThat(session.isDirty()).isTrue(); // -> change not yet flushed!
+		// note: using an IDENTITY id generation strategy would trigger an immediate insert
 		repository.flush();
 		assertThat(session.isDirty()).isFalse();
 	}
