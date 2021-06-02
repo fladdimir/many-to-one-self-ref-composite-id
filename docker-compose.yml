@@ -10,3 +10,4 @@ services:
       PGPORT: 5432
     ports:
       - 5432:5432
+    command: ["postgres", "-c", "log_statement=all"]
