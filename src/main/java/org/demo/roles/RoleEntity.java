@@ -3,14 +3,12 @@ package org.demo.roles;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
-
-import org.hibernate.annotations.BatchSize;
+import javax.persistence.PreRemove;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -22,17 +20,19 @@ import lombok.NoArgsConstructor;
 public class RoleEntity {
 
     @Id
-    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name")
     private String name;
 
-    // @Fetch(FetchMode.JOIN)
     @EqualsAndHashCode.Exclude
     @ManyToMany
-    @BatchSize(size = 2)
     private Set<PermissionEntity> permissions = new HashSet<>();
 
+    @PreRemove
+    public void preRemove() {
+        // remove permissions if this was the only associated role
+        var permissionRepository = RepositoryService.getInstance().getPermissionRepository();
+        permissions.stream().filter(p -> p.getRoles().size() == 1).forEach(permissionRepository::delete);
+    }
 }
