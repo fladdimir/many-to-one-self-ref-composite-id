@@ -1,9 +1,9 @@
-package org.demo.bookshelf;
+package org.demo.roles;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface BookRepository extends JpaRepository<Book, Long> {
-    
+public interface RoleRepository extends JpaRepository<RoleEntity, Long> {
+
 }
