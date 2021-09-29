@@ -1,0 +1,12 @@
+version: "3"
+
+services:
+  maria_db:
+    image: mariadb
+    environment:
+      MARIADB_USER: usernamex
+      MARIADB_PASSWORD: passwordx
+      MARIADB_DATABASE: databasex
+      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 1
+    ports:
+      - 5432:3306

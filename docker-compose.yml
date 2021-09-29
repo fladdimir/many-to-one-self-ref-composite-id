@@ -4,9 +4,9 @@ services:
   postgres_db:
     image: postgres
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
+      POSTGRES_USER: usernamex
+      POSTGRES_PASSWORD: passwordx
+      POSTGRES_DB: databasex
       PGPORT: 5432
     ports:
       - 5432:5432
