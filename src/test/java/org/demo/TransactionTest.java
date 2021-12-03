@@ -39,7 +39,7 @@ class TransactionTest {
 	}
 
 	@BeforeEach
-	public void clean() {
+	void clean() {
 		Stream.of(3, 2, 1, 0).map(this::findOptionalById).forEach(o -> o.ifPresent(repository::delete));
 		repository.flush();
 		assertThat(repository.findAll()).isEmpty();
@@ -48,7 +48,7 @@ class TransactionTest {
 	@Test
 	@Transactional // creates new transaction when starting the test
 	@Rollback(false) // commit at end of test (not needed, just for manual DB inspection afterwards)
-	public void testSessionWithTransactional() {
+	void testSessionWithTransactional() {
 		Session session = entityManager.unwrap(Session.class);
 		assertThat(session.isDirty()).isFalse();
 
@@ -62,7 +62,7 @@ class TransactionTest {
 	}
 
 	@Test
-	public void testSessionWithoutTransactional() {
+	void testSessionWithoutTransactional() {
 		Session session = entityManager.unwrap(Session.class);
 		assertThat(session.isDirty()).isFalse();
 
