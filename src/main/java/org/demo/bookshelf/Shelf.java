@@ -26,6 +26,8 @@ public class Shelf {
     @Version
     int version = 0;
 
+    private String name;
+
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @ManyToMany(mappedBy = "shelfs")
