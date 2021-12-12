@@ -1,0 +1,12 @@
+version: "3"
+
+services:
+  mysql_db:
+    image: mysql
+    environment:
+      MYSQL_USER: usernamex
+      MYSQL_PASSWORD: passwordx
+      MYSQL_DATABASE: databasex
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+    ports:
+      - 5432:3306

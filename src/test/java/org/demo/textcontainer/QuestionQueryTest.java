@@ -13,14 +13,15 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.EnabledIf;
 
 // 'docker-compose up' before running the tests (or use test-containers)
 @SpringBootTest
 // test native queries for mariadb
 // docker-compose -f docker-compose_mariadb.yml up
-// @ActiveProfiles("mariadb")
 // export SPRING_PROFILES_ACTIVE=mariadb
-// (todo: use testcontainers)
+// @ActiveProfiles("mariadb")
+@EnabledIf(expression = "#{environment.acceptsProfiles('default', 'mariadb', 'postgis')}", loadContext = true)
 class QuestionQueryTest {
 
     @Autowired

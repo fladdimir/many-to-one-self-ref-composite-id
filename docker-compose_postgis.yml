@@ -1,0 +1,13 @@
+version: "3"
+
+services:
+  postgres_db:
+    image: postgis/postgis
+    environment:
+      POSTGRES_USER: usernamex
+      POSTGRES_PASSWORD: passwordx
+      POSTGRES_DB: databasex
+      PGPORT: 5432
+    ports:
+      - 5432:5432
+    command: [ "postgres", "-c", "log_statement=all" ]

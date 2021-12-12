@@ -24,7 +24,7 @@ class BatchInsertTest {
   }
 
   @Test
-  void test() {
+  void testBatchInsert() {
     System.out.println("\nCreating new entities...\n");
     int n = 15;
     var entities = Stream.generate(UuidEntity::new).limit(n).collect(Collectors.toList());
