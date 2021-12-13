@@ -47,13 +47,13 @@ test {
 	useJUnitPlatform()
 }
 
-eclipse {
-    classpath {
-        file.beforeMerged { cp ->
-            cp.entries.add( new org.gradle.plugins.ide.eclipse.model.SourceFolder('build/generated/sources/annotationProcessor/java/main', null) )
-        }
-    }
-}
+// eclipse {
+//     classpath {
+//         file.beforeMerged { cp ->
+//             cp.entries.add( new org.gradle.plugins.ide.eclipse.model.SourceFolder('build/generated/sources/annotationProcessor/java/main', null) )
+//         }
+//     }
+// }
 
 /*
 sourceSets {

@@ -50,5 +50,9 @@ class QueryDslTest {
         var result4 = repository.findAll(nameContains1.or(isCategory0));
         assertThat(result4).hasSize(7)
                 .allMatch(entity -> entity.getName().contains("1") || entity.getCategoryNumber() == 0);
+
     }
+
+    // todo: more tests including e.g. a subquery on an assocation
+    // QShelf.shelf.books.contains(JPAExpressions.selectFrom(QBook.book).where(QBook.book.shelfs.size().gt(Expressions.THREE)));
 }
