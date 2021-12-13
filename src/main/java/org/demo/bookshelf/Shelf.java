@@ -28,6 +28,8 @@ public class Shelf {
 
     private String name;
 
+    private int categoryNumber;
+
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @ManyToMany(mappedBy = "shelfs")

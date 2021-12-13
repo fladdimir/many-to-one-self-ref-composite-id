@@ -2,6 +2,7 @@ plugins {
 	id 'org.springframework.boot' version '2.4.5'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
+	id "net.ltgt.apt-eclipse" version '0.21'
 }
 
 group = 'org'
@@ -23,15 +24,20 @@ dependencies {
 	implementation 'org.hibernate:hibernate-spatial'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
-	compileOnly 'org.projectlombok:lombok'
+	compileOnly 'javax.annotation:javax.annotation-api'
+	annotationProcessor 'javax.annotation:javax.annotation-api'
+	implementation 'com.querydsl:querydsl-jpa'
+	annotationProcessor 'com.querydsl:querydsl-apt::jpa'
 
 	runtimeOnly 'org.postgresql:postgresql'
 	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
 	runtimeOnly 'mysql:mysql-connector-java'
 
+	compileOnly 'org.projectlombok:lombok'
 	testCompileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'
+
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.assertj:assertj-core:3.11.1'
@@ -40,3 +46,21 @@ dependencies {
 test {
 	useJUnitPlatform()
 }
+
+eclipse {
+    classpath {
+        file.beforeMerged { cp ->
+            cp.entries.add( new org.gradle.plugins.ide.eclipse.model.SourceFolder('build/generated/sources/annotationProcessor/java/main', null) )
+        }
+    }
+}
+
+/*
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java', 'build/generated/source/apt/main']
+        }
+    }
+}
+*/
