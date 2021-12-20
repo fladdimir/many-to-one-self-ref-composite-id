@@ -23,8 +23,13 @@ class SqlArrayTest {
     @Autowired
     private SqlArrayEntityRepository repository;
 
-    @Sql(statements = "DELETE FROM sql_array_entity;" //
+    @Sql(statements = "" //
+            + "DELETE FROM sql_array_entity_longs;" //
+            + "DELETE FROM sql_array_entity;" //
+            // insert 2 rows, with 1 and 2 value(s) in the array
             + "INSERT INTO sql_array_entity (id, ints) VALUES (1, ARRAY[2,3]), (2, ARRAY[4]);" //
+            // insert 2 longs for the first entity
+            + "INSERT INTO sql_array_entity_longs (sql_array_entity_id, longs, longs_order) VALUES (1, 4, 0), (1, 6, 1);" //
             , executionPhase = ExecutionPhase.BEFORE_TEST_METHOD, //
             config = @SqlConfig(transactionMode = TransactionMode.ISOLATED, errorMode = ErrorMode.FAIL_ON_ERROR))
     @Transactional
@@ -32,15 +37,18 @@ class SqlArrayTest {
     @Test
     void testSqlSetup() {
 
-        BooleanBuilder builder = new BooleanBuilder();
+        var builder = new BooleanBuilder();
+        builder.and(
+                Expressions.booleanTemplate("function('array_length', {0}, 1)", QSqlArrayEntity.sqlArrayEntity.ints)
+                        .castToNum(Integer.class).gt(1));
+        builder.and(QSqlArrayEntity.sqlArrayEntity.longs.size().goe(2));
 
-        builder.and(Expressions.booleanTemplate("function('array_length', {0}, 1)", QSqlArrayEntity.sqlArrayEntity.ints)
-                .castToNum(Integer.class).gt(1));
-
-        var result = repository.findAll(builder);
-        assertThat(result).hasSize(1);
-        assertThat(result.iterator().next().getId()).isEqualTo(1);
-        assertThat(result.iterator().next().getInts()).containsExactly(2, 3);
+        Iterable<SqlArrayEntity> results = repository.findAll(builder);
+        assertThat(results).hasSize(1);
+        var result = results.iterator().next();
+        assertThat(result.getId()).isEqualTo(1);
+        assertThat(result.getInts()).containsExactly(2, 3);
+        assertThat(result.getLongs()).containsExactly(4L, 6L);
     }
 
 }
