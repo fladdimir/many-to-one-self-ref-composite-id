@@ -12,6 +12,7 @@ import javax.persistence.OrderColumn;
 
 import com.vladmihalcea.hibernate.type.array.IntArrayType;
 import com.vladmihalcea.hibernate.type.array.ListArrayType;
+import com.vladmihalcea.hibernate.type.array.StringArrayType;
 
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
@@ -21,6 +22,7 @@ import lombok.NoArgsConstructor;
 
 @TypeDef(name = "int-array", typeClass = IntArrayType.class)
 @TypeDef(name = "list-array", typeClass = ListArrayType.class)
+@TypeDef(name = "string-array", typeClass = StringArrayType.class)
 @Data
 @NoArgsConstructor
 @Entity
@@ -37,4 +39,8 @@ public class SqlArrayEntity {
     @ElementCollection
     @OrderColumn
     private List<Long> longs;
+
+    @Column(columnDefinition = "text[]")
+    @Type(type = "string-array")
+    private String[] strings;
 }

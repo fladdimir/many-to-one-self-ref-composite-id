@@ -2,6 +2,8 @@ package org.demo.sql_array;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Arrays;
+
 import javax.transaction.Transactional;
 
 import com.querydsl.core.BooleanBuilder;
@@ -17,21 +19,22 @@ import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.jdbc.SqlConfig.ErrorMode;
 import org.springframework.test.context.jdbc.SqlConfig.TransactionMode;
 
+@Sql(statements = SqlArrayTest.SETUP_STRING, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD, //
+        config = @SqlConfig(transactionMode = TransactionMode.ISOLATED, errorMode = ErrorMode.FAIL_ON_ERROR))
 @SpringBootTest
 class SqlArrayTest {
 
     @Autowired
     private SqlArrayEntityRepository repository;
 
-    @Sql(statements = "" //
+    static final String SETUP_STRING = "" //
             + "DELETE FROM sql_array_entity_longs;" //
             + "DELETE FROM sql_array_entity;" //
             // insert 2 rows, with 1 and 2 value(s) in the array
-            + "INSERT INTO sql_array_entity (id, ints) VALUES (1, ARRAY[2,3]), (2, ARRAY[4]);" //
+            + "INSERT INTO sql_array_entity (id, ints, strings) VALUES (1, ARRAY[2,3], ARRAY['s1']), (2, ARRAY[4], ARRAY['s2', 's3']);" //
             // insert 2 longs for the first entity
-            + "INSERT INTO sql_array_entity_longs (sql_array_entity_id, longs, longs_order) VALUES (1, 4, 0), (1, 6, 1);" //
-            , executionPhase = ExecutionPhase.BEFORE_TEST_METHOD, //
-            config = @SqlConfig(transactionMode = TransactionMode.ISOLATED, errorMode = ErrorMode.FAIL_ON_ERROR))
+            + "INSERT INTO sql_array_entity_longs (sql_array_entity_id, longs, longs_order) VALUES (1, 4, 0), (1, 6, 1);";
+
     @Transactional
     @Rollback(false)
     @Test
@@ -49,6 +52,14 @@ class SqlArrayTest {
         assertThat(result.getId()).isEqualTo(1);
         assertThat(result.getInts()).containsExactly(2, 3);
         assertThat(result.getLongs()).containsExactly(4L, 6L);
+    }
+
+    @Transactional
+    @Rollback(false)
+    @Test
+    void testStrings() {
+        assertThat(repository.findAll().stream().map(SqlArrayEntity::getStrings).flatMap(Arrays::stream))
+                .containsExactlyInAnyOrder("s1", "s2", "s3");
     }
 
 }
