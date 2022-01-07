@@ -3,6 +3,7 @@ plugins {
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
 	id "net.ltgt.apt-eclipse" version '0.21'
+    id "net.ltgt.errorprone" version "2.0.2"
 }
 
 group = 'org'
@@ -42,6 +43,14 @@ dependencies {
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.assertj:assertj-core:3.11.1'
+
+	errorprone "com.google.errorprone:error_prone_core:2.10.0"
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.errorprone.disableWarningsInGeneratedCode = true
+	options.errorprone.disable("SameNameButDifferent")
+	options.errorprone.enabled = false // <-- enable here if wanted
 }
 
 test {
