@@ -1,0 +1,7 @@
+@startuml my new diagram
+title my new diagram page
+Alice -> Bob
+Bob -> Alice
+Triton -> Node
+Bob -> Node
+@enduml
