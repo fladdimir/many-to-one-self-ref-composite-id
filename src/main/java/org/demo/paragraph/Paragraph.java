@@ -12,6 +12,8 @@ import javax.persistence.NamedEntityGraph;
 import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
 
+import org.hibernate.annotations.BatchSize;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -28,6 +30,7 @@ public class Paragraph {
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
   private Long id;
 
+  @BatchSize(size = 2)
   @EqualsAndHashCode.Exclude
   @OneToMany
   private Set<Question> questions = new HashSet<>();

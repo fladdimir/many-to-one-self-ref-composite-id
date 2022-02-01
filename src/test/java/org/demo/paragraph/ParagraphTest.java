@@ -116,4 +116,19 @@ class ParagraphTest {
     tm.commit(ts);
   }
 
+  @Test
+  void testLazyInit() {
+    var ts = tm.getTransaction(TransactionDefinition.withDefaults());
+
+    System.out.println("\nFIND BY ID\n");
+    var p1 = paragraphRepository.findById(pid1).get();
+
+    System.out.println("\nBEFORE FOR\n");
+    for (var sp : p1.getSubParagraphs()) {
+      System.out.println("\nBEFORE GET QUESTIONS\n");
+      sp.getQuestions().forEach(q -> assertThat(q.getContent()).startsWith("content"));
+    }
+
+    tm.commit(ts);
+  }
 }
