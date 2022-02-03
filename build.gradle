@@ -26,6 +26,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	
 	implementation 'com.vladmihalcea:hibernate-types-55:2.14.0'
+	implementation 'org.modelmapper:modelmapper:3.0.0'
 
 	compileOnly 'javax.annotation:javax.annotation-api'
 	annotationProcessor 'javax.annotation:javax.annotation-api'
@@ -45,6 +46,7 @@ dependencies {
 	testImplementation 'org.assertj:assertj-core:3.11.1'
 
 	errorprone "com.google.errorprone:error_prone_core:2.10.0"
+
 }
 
 tasks.withType(JavaCompile).configureEach {

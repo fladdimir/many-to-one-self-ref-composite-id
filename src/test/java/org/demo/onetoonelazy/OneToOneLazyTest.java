@@ -1,12 +1,16 @@
 package org.demo.onetoonelazy;
 
-import org.assertj.core.api.Assertions;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
+
+import lombok.Data;
 
 @SpringBootTest
 class OneToOneLazyTest {
@@ -16,12 +20,16 @@ class OneToOneLazyTest {
     @Autowired
     private LazyBRepository bRepository;
     @Autowired
+    private CRepository cRepository;
+    @Autowired
     private PlatformTransactionManager tm;
 
     @BeforeEach
     void beforeEach() {
+
         aRepository.deleteAllInBatch();
         bRepository.deleteAllInBatch();
+        cRepository.deleteAllInBatch();
 
         var a = aRepository.save(new LazyA());
         var b = new LazyB();
@@ -42,7 +50,7 @@ class OneToOneLazyTest {
         System.out.print("\nFIND A BY ID\n");
         var a = aRepository.findById(aid).orElseThrow(); // no join fetch
         System.out.print("\nACCESS B VALUE\n");
-        Assertions.assertThat(a.getLazyB().getMyValue()).isEqualTo("bbb"); // extra query for lazy prop b
+        assertThat(a.getLazyB().getMyValue()).isEqualTo("bbb"); // extra query for lazy prop b
 
         tm.commit(ts);
     }
@@ -55,7 +63,40 @@ class OneToOneLazyTest {
         System.out.print("\nFIND A BY ID\n");
         var a = aRepository.getLazyA(aid); // join fetch
         System.out.print("\nACCESS B VALUE\n");
-        Assertions.assertThat(a.getLazyB().getMyValue()).isEqualTo("bbb"); // no query here
+        assertThat(a.getLazyB().getMyValue()).isEqualTo("bbb"); // no query here
+
+        tm.commit(ts);
+    }
+
+    @Data
+    static class LazyADto1 {
+        private Long id;
+        private Long lazyBId;
+        private String lazyBMyValue;
+        private Long cid;
+        private String cValue;
+    }
+
+    @Test
+    void test_modelMapperNested() {
+        var c = new C();
+        c.setCValue("c");
+        var a = aRepository.getLazyA(aid);
+        a.getLazyB().setC(c);
+        aRepository.save(a);
+
+        var ts = tm.getTransaction(TransactionDefinition.withDefaults());
+
+        a = aRepository.getLazyA(aid);
+        assertThat(a.getLazyB().getC().getCValue()).isEqualTo("c");
+
+        ModelMapper mm = new ModelMapper();
+        mm.typeMap(LazyA.class, LazyADto1.class).addMappings(mapper -> {
+            mapper.map(src -> src.getLazyB().getC().getId(), LazyADto1::setCid);
+            mapper.map(src -> src.getLazyB().getC().getCValue(), LazyADto1::setCValue);
+        });
+        var ladto = mm.map(a, LazyADto1.class);
+        assertThat(ladto.getCValue()).isEqualTo("c");
 
         tm.commit(ts);
     }
