@@ -13,6 +13,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.junit.jupiter.EnabledIf;
 
 // 'docker-compose up' before running the tests (or use test-containers)
@@ -37,6 +38,16 @@ class QuestionQueryTest {
             t.setOtherInfo("i" + i);
             repo.save(t);
         });
+    }
+
+    @Test
+    void testSpecification() {
+        String column = "content";
+        String value = "c";
+        Specification<TextContainerEntity> spec = (root, query, criteriaBuilder) -> criteriaBuilder
+                .like(root.get(column), "%" + value + "%");
+        var result = repo.findAll(spec);
+        assertThat(result).hasSize(4);
     }
 
     @Test

@@ -5,13 +5,15 @@ import java.util.List;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
 @Profile("!mariadb & !mysql") // default(postgres)/postgis
-public interface TextContainerRepository extends JpaRepository<TextContainerEntity, Long> {
+public interface TextContainerRepository
+                extends JpaRepository<TextContainerEntity, Long>, JpaSpecificationExecutor<TextContainerEntity> {
 
         List<TextContainerEntity> findByContentContains(String searchTerm);
 
