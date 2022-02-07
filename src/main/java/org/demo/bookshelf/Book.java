@@ -19,6 +19,10 @@ import lombok.ToString;
 @NoArgsConstructor
 public class Book {
 
+    public static interface BookWithIdOnly {
+        Long getId();
+    }
+
     @Id
     @GeneratedValue
     Long id;

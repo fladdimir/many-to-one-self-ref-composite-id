@@ -2,6 +2,9 @@ package org.demo.bookshelf;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
+
+import org.demo.bookshelf.Book.BookWithIdOnly;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +33,54 @@ class BookShelfTest {
 		bookRepository.deleteAll();
 
 		// create not yet associated entities:
-		bookRepository.save(new Book());
-		shelfRepository.save(new Shelf());
+		var book = bookRepository.saveAndFlush(new Book());
+		var shelf = shelfRepository.saveAndFlush(new Shelf());
+
+		bookId = book.getId();
+		shelfId = shelf.getId();
+
+		tm.commit(ts);
+	}
+
+	private Long bookId;
+	private Long shelfId;
+
+	@Test
+	void testLoadManyIds() {
+		var ts = tm.getTransaction(TransactionDefinition.withDefaults());
+		var shelf = shelfRepository.findById(shelfId).get();
+		var book = bookRepository.findById(bookId).get();
+		shelf.books.add(book);
+		book.shelfs.add(shelf);
+		tm.commit(ts);
+
+		ts = tm.getTransaction(TransactionDefinition.withDefaults());
+		System.out.println("\n\nFIND SHELF BY ID\n\n");
+		shelf = shelfRepository.findById(shelfId).get();
+		System.out.println("\n\nFIND BOOK BY ID\n\n");
+		book = bookRepository.findById(bookId).get();
+		System.out.println("\n\nSHELF BOOKS SIZE\n\n");
+		assertThat(shelf.books).hasSize(1);
+		System.out.println("\n\nBOOK SHELFS SIZE\n\n");
+		assertThat(book.shelfs).hasSize(1);
+		tm.commit(ts);
+
+		ts = tm.getTransaction(TransactionDefinition.withDefaults());
+
+		System.out.println("\n\nFIND SHELF BY ID\n\n");
+		shelf = shelfRepository.findById(shelfId).get();
+
+		System.out.println("\n\nFIND SHELF IDs BY BOOK ID (JPA-QUERY)\n\n");
+		List<Long> bookIds1 = bookRepository.getIdByShelfsIdJpaQuery(shelf.getId());
+		assertThat(bookIds1).containsExactlyInAnyOrder(bookId);
+
+		System.out.println("\n\nFIND SHELF IDs BY BOOK ID (SPRING-DATA-QUERY)\n\n");
+		List<BookWithIdOnly> bookIds2 = bookRepository.getIdByShelfsId(shelf.getId());
+		assertThat(bookIds2.stream().map(BookWithIdOnly::getId)).containsExactlyInAnyOrder(bookId);
+
+		System.out.println("\n\nFIND SHELF IDs BY BOOK ID (NATIVE-QUERY)\n\n");
+		List<Long> bookIds3 = bookRepository.getBookIdsForShelfId(shelf.getId());
+		assertThat(bookIds3).containsExactlyInAnyOrder(bookId);
 
 		tm.commit(ts);
 	}
