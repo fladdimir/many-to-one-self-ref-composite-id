@@ -49,6 +49,9 @@ class OneToOneLazyTest {
 
         System.out.print("\nFIND A BY ID\n");
         var a = aRepository.findById(aid).orElseThrow(); // no join fetch
+        System.out.print("\nACCESS B ID\n");
+        var id = a.getLazyB().getId(); // does not trigger a db query
+        assertThat(id).isNotNull();
         System.out.print("\nACCESS B VALUE\n");
         assertThat(a.getLazyB().getMyValue()).isEqualTo("bbb"); // extra query for lazy prop b
 
