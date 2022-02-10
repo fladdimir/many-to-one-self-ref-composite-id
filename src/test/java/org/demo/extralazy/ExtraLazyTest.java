@@ -24,22 +24,32 @@ class ExtraLazyTest {
     @Autowired
     private PlatformTransactionManager tm;
 
+    private static final int N = 5;
+
     @BeforeEach
     void before() {
         childRepository.deleteAllInBatch();
         parentRepository.deleteAllInBatch();
 
+        createParentWithNChildren();
+
+        assertAllParentsHaveNChildren();
+    }
+
+    private void assertAllParentsHaveNChildren() {
+        var ts = tm.getTransaction(TransactionDefinition.withDefaults());
+        parentRepository.findAll().forEach(p -> assertThat(p.getChildren()).hasSize(N));
+        tm.commit(ts);
+    }
+
+    private void createParentWithNChildren() {
         final ElParent parent = parentRepository.save(new ElParent());
         pid = parent.getId();
-        var n = 10;
+
         parent.getChildren()
-                .addAll(IntStream.rangeClosed(1, n).mapToObj(i -> new ElChild("" + i, parent))
+                .addAll(IntStream.rangeClosed(1, N).mapToObj(i -> new ElChild("" + i, parent))
                         .collect(Collectors.toList()));
         parentRepository.save(parent);
-
-        var ts = tm.getTransaction(TransactionDefinition.withDefaults());
-        parentRepository.findAll().forEach(p -> assertThat(p.getChildren()).hasSize(n));
-        tm.commit(ts);
     }
 
     Long pid;
@@ -61,5 +71,12 @@ class ExtraLazyTest {
         }
 
         tm.commit(ts);
+    }
+
+    @Test
+    void testMoreParents() {
+        createParentWithNChildren();
+        createParentWithNChildren();
+        assertAllParentsHaveNChildren();
     }
 }
